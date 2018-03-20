@@ -1,0 +1,12 @@
+* {
+    background: rgba(0, 0, 0, .1);
+}
+
+body {
+    /*background: #000;*/
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
