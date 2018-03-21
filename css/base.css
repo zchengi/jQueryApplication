@@ -36,6 +36,10 @@ h1 {
     margin: 10px 0;
 }
 
+.fr {
+    float: right;
+}
+
 input,
 textarea,
 button,
@@ -159,4 +163,13 @@ button {
 
 .task-content {
     margin-left: 10px;
+}
+
+.action {
+    color: #888;
+    font-size: 90%;
+}
+
+.action:hover {
+    color: #333;
 }
