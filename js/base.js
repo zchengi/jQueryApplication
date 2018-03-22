@@ -16,12 +16,23 @@
         , $update_form
         , $task_detail_content
         , $task_detail_content_input
+        , $checkbox_complete
+        , $msg = $('.msg')
+        , $msg_content = $msg.find('.msg-content')
+        , $msg_confirm = $msg.find('.confirmed')
+        , $alerter = $(".alerter")
         ;
 
     init();
 
     $form_add_task.on('submit', on_add_task_form_submit);
     $task_detail_mask.on('click', hide_task_detail);
+
+    function listen_msg_event() {
+        $msg_confirm.on('click', function () {
+            hide_msg();
+        });
+    }
 
     function on_add_task_form_submit(e) {
 
@@ -70,6 +81,25 @@
         $task_detail_mask.show();
     }
 
+    /*监听完成 Task 事件*/
+    function listen_checkbox_complete() {
+
+        $checkbox_complete.on('click', function () {
+            var $this = $(this);
+            var index = $this.parent().parent().data('index');
+            var item = get(index);
+            if (item.complete) {
+                update_task(index, {complete: false});
+            } else {
+                update_task(index, {complete: true});
+            }
+        });
+    }
+
+    function get(index) {
+        return store.get('task_list')[index];
+    }
+
     /*更新 Task */
     function update_task(index, data) {
 
@@ -77,7 +107,7 @@
             return;
         }
 
-        task_list[index] = data;
+        task_list[index] = $.extend({}, task_list[index], data);
         refresh_task_list();
     }
 
@@ -112,7 +142,7 @@
             '</div>' +
             '<div class="remind input-item">' +
             '<label>提醒时间</label>' +
-            '<input name="remind_date" type="date" value="' + (item.remind_date || '') + '">' +
+            '<input class="datetime" name="remind_date" type="text" value="' + (item.remind_date || '') + '">' +
             '</div>' +
             '<div class="input-item"><button type="submit">更新</button></div>' +
             '</form>';
@@ -120,6 +150,7 @@
         /*用新模板替换旧模版*/
         $task_detail.html(null);
         $task_detail.html(tpl);
+        $('.datetime').datetimepicker();
         /*选中其中的 form 元素，因为之后会是使用其监听 submit 事件*/
         $update_form = $task_detail.find('form');
         /*选中显示 Task 内容的元素*/
@@ -193,23 +224,69 @@
         // store.clear();
 
         task_list = store.get('task_list') || [];
+
         render_task_list();
+        task_remind_check();
+        listen_msg_event();
+    }
+
+    function task_remind_check() {
+        var itl = setInterval(function () {
+            for (var i = 0; i < task_list.length; i++) {
+                var item = get(i), current_timestamp, task_timestamp;
+                if (!item || !item.remind_date || item.informed) continue;
+
+                current_timestamp = (new Date()).getTime();
+                task_timestamp = (new Date(item.remind_date)).getTime();
+                if (current_timestamp - task_timestamp >= 1) {
+                    update_task(i, {informed: true});
+                    show_msg(item.content);
+                }
+            }
+        }, 300);
+    }
+
+    function show_msg(msg) {
+
+        $msg_content.html(msg);
+        $alerter.get(0).play();
+        $msg.show();
+    }
+
+    function hide_msg() {
+        $msg.hide();
     }
 
     /*渲染所有 Task 模版*/
     function render_task_list() {
 
+        var $task;
         var $task_list = $('.task-list');
         $task_list.html('');
+        var complete_items = [];
         for (var i = 0; i < task_list.length; i++) {
-            var $task = render_task_item(task_list[i], i);
+            var item = task_list[i];
+            if (item && item.complete) {
+                complete_items[i] = item;
+            } else {
+                $task = render_task_item(item, i);
+            }
             $task_list.prepend($task);
+        }
+
+        for (var j = 0; j < complete_items.length; j++) {
+            $task = render_task_item(complete_items[j], j);
+            if (!$task) continue;
+            $task.addClass('completed');
+            $task_list.append($task);
         }
 
         $task_delete_trigger = $('.action.delete');
         $task_detail_trigger = $('.action.detail');
+        $checkbox_complete = $('.task-list .complete');
         listen_task_delete();
         listen_task_detail();
+        listen_checkbox_complete();
     }
 
     /*渲染单条 Task 模版*/
@@ -219,7 +296,7 @@
 
         var list_item_tpl =
             '<div class="task-item" data-index="' + index + '">' +
-            '<span><input type="checkbox"></span>' +
+            '<span><input class="complete" ' + (data.complete ? 'checked' : '') + ' type="checkbox"></span>' +
             '<span class="task-content">' + data.content + '</span>' +
             '<span class ="fr">' +
             '<span class="action delete"> 删除</span>' +

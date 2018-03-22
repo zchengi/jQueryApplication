@@ -19,6 +19,7 @@ body {
     margin: 0;*/
     background: #005673;
     color: #fff;
+    font-family: "微软雅黑", sans-serif;
 }
 
 .container {
@@ -93,6 +94,7 @@ button {
     margin-right: 1%;
 }
 
+button.primary,
 [type=submit] {
     background: #46b1e4;
 }
@@ -117,6 +119,23 @@ button {
     color: #333;
     margin-bottom: 2px;
     cursor: pointer;
+}
+
+.task-item.completed {
+    color: #aaa;
+    /*background: rgba(255, 255, 255, .7);*/
+    opacity: .5;
+}
+
+.task-item.completed:after {
+    content: " ";
+    height: 1px;
+    background: #aaa;
+    width: 96%;
+    position: relative;
+    top: -8px;
+    float: right;
+    display: block;
 }
 
 .task-item:hover {
@@ -174,4 +193,21 @@ button {
 
 .action:hover {
     color: #333;
+}
+
+.msg {
+    display: none;
+    text-align: center;
+    background: #72ff52;
+    padding: 10px;
+    color: #333;
+}
+
+.anchor {
+    cursor: pointer;
+}
+
+.alerter {
+    width: 0;
+    height: 0;
 }

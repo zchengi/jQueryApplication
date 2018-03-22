@@ -4,14 +4,19 @@
     <meta charset="UTF-8">
     <title>My Todo App</title>
     <link rel="stylesheet" href="node_modules/normalize.css/normalize.css"/>
+    <link rel="stylesheet" href="node_modules/jquery-datetimepicker/build/jquery.datetimepicker.min.css"/>
     <link rel="stylesheet" href="css/base.css"/>
 </head>
 <body>
+<div class="msg">
+    <span class="msg-content"></span>
+    <span class="anchor confirmed">关闭</span>
+</div>
 <div class="container"><!-- 总容器开始 -->
     <h1>My Todo</h1>
     <form class="add-task">
         <input name="content" type="text" placeholder="e.g.下午好" autofocus autocomplete="off">
-        <button type="submit">submit</button>
+        <button type="submit">提交</button>
     </form>
     <div class="task-list"><!-- 清单列表开始 -->
         <!--<div class="task-item">&lt;!&ndash; 任务开始 &ndash;&gt;
@@ -39,7 +44,9 @@
         </form>
     </div><!-- 任务详情结束 -->
 </div><!-- 总容器结束 -->
+<video class="alerter" src="mp3/alert.mp3"></video>
 <script src="node_modules/jquery/dist/jquery.js"></script>
+<script src="node_modules/jquery-datetimepicker/build/jquery.datetimepicker.full.min.js"></script>
 <script src="node_modules/store/store.js"></script>
 <script src="js/base.js"></script>
 </body>
